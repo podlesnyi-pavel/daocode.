@@ -1,9 +1,11 @@
-import { Template } from './components/Template';
+import './app.scss';
+import { Sidebar } from './components/Sidebar';
+import { Workspace } from './components/Workspace';
 
 const App: React.FC = () => (
   <div className="App">
-    <h1>default</h1>
-    <Template />
+    <Sidebar />
+    <Workspace />
   </div>
 );
 
