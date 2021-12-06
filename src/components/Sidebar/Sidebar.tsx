@@ -1,8 +1,14 @@
+import { Todo } from '../../types';
 import './sidebar.scss';
 import { ListItems } from '../ListItems';
 
-export const Sidebar = () => (
+type Props = {
+  todos: Todo[],
+  chooseItem: (item: Todo) => void,
+};
+
+export const Sidebar: React.FC<Props> = ({ todos, chooseItem }) => (
   <div className="sidebar">
-    <ListItems />
+    <ListItems todos={todos} chooseItem={chooseItem} />
   </div>
 );
