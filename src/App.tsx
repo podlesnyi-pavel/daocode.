@@ -25,12 +25,17 @@ const App: React.FC = () => {
     setShowWorkspace(false);
   }
 
-  const editItem = (item: Todo) => {
-    console.log(todos);
-    console.log(item);
-    const newTodos = [...todos];
-    const index = todos.findIndex((todo: Todo) => todo.id === item.id);
-    setTodos(newTodos.splice(index, 1, item));
+  const editItem = (newObject: Todo) => {
+    const positionItemToChange = todos.findIndex((todo: Todo) => todo.id === newObject.id);
+    setTodos(todos.map((item1, index) => {
+      if (positionItemToChange === index) {
+        return newObject;
+      }
+
+      return item1;
+    }));
+
+    setCurrentItem(newObject);
   };
 
   return (
