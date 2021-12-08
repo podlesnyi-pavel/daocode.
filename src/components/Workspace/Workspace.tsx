@@ -1,7 +1,10 @@
 import { ChangeEvent, useState } from 'react';
 import { Todo } from '../../types';
-import './workspace.scss';
 import { Modal, Button } from 'antd';
+
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+const { confirm } = Modal;
 
 type Props = {
   currentItem: Todo,
@@ -10,7 +13,6 @@ type Props = {
 };
 
 export const Workspace: React.FC<Props> = ({ currentItem, deleteItem, editItem }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [userId, setId] = useState(currentItem.userId);
   const [title, setTitle] = useState(currentItem.title);
@@ -26,43 +28,10 @@ export const Workspace: React.FC<Props> = ({ currentItem, deleteItem, editItem }
       userId,
       title,
     })
-
-    // fetch(`https://jsonplaceholder.typicode.com/todos/ + ${currentItem.id}`, {
-    //   method: 'PUT',
-    //   body: JSON.stringify({
-    //     id: currentItem.id,
-    //     title: 'foo',
-    //     body: 'bar',
-    //     userId: 1,
-    //   }),
-    //   headers: {
-    //     'Content-type': 'application/json; charset=UTF-8',
-    //   },
-    // })
-    // .then((response) => response.json())
-    // .then((json) => console.log(json));
   };
 
   const handleCancelEdit = () => {
     setIsEditVisible(false);
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-
-    deleteItem(currentItem.id);
-
-    // fetch(`https://jsonplaceholder.typicode.com/todos/ + ${currentItem.id}`, {
-    //   method: 'DELETE',
-    // });
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   const changeId = (event: ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +41,20 @@ export const Workspace: React.FC<Props> = ({ currentItem, deleteItem, editItem }
   const changeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
+
+  
+  function showDeleteConfirm() {
+    confirm({
+      title: 'Are you sure delete this task?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        deleteItem(currentItem.id);
+      },
+    });
+  }
 
   return (
     <div className="workspace">
@@ -101,13 +84,9 @@ export const Workspace: React.FC<Props> = ({ currentItem, deleteItem, editItem }
               />
             </Modal>
   
-            <Button
-              type="primary"
-              onClick={showModal}
-            >
+            <Button onClick={showDeleteConfirm} type="dashed">
               Delete
             </Button>
-            <Modal title="Delete?" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} />
           </div>
         </div>
       )}
