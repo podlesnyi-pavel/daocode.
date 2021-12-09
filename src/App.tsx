@@ -87,7 +87,6 @@ const App: React.FC = () => {
       const transaction = event.target.result.transaction('tasks', 'readwrite');
       const tasks = transaction.objectStore("tasks");
       tasks.clear();
-      console.log('удаленно');
       const positionToChange = todos.findIndex(item => item.id === newObject.id);
 
       const newTodos = todos.map((todo, index) => {
@@ -96,27 +95,10 @@ const App: React.FC = () => {
         }
         return todo;
       }); 
-      console.log(newTodos);
 
       newTodos.forEach(item => tasks.add(item));
       setTodos(newTodos);
     }
-
-    // const objTrans = dbRef.current?.transaction("tasks", "readwrite");
-    // const objStore = objTrans?.objectStore('tasks');
-    // const objKeyRange = IDBKeyRange.only(newObject.id);
-    // const objCursor = objStore?.openCursor(objKeyRange);
-
-    // if (objCursor) {
-    //   objCursor.onsuccess = function(event: any) {
-    //     const cursor = event.target.result;
-    //     const objRequest = cursor.update({
-    //       ...newObject,
-    //       userId,
-    //       title,
-    //     });
-    //   }
-    // }
   };
 
   const showModal = () => {
@@ -140,6 +122,7 @@ const App: React.FC = () => {
     
       const task = {
         userId: userId,
+          // id: uuidv4(),
           id: todos.length + 1,
           title: title,
           completed: false
