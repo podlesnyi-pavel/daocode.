@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { Workspace } from './components/Workspace';
 import { Todo } from './types';
 import { Modal, Button } from 'antd';
+import { Context } from './context';
 
 const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -12,46 +13,30 @@ const App: React.FC = () => {
   const [isAddVisible, setIsAddVisible] = useState(false);
   const [userId, setUserId] = useState(1);
   const [title, setTitle] = useState('');
-  // const [db, setDb] = useState<IDBDatabase>({} as any as IDBDatabase);
 
   const dbRef = useRef<IDBDatabase>();
   
   useEffect(() => {
-    // fetch('https://jsonplaceholder.typicode.com/todos')
-    // .then(response => response.json())
-    // .then(response => setTodos(response));
-    
     let openRequest = indexedDB.open('tasks', 1);
 
     openRequest.onupgradeneeded = function() {
-      console.log('open db - onupgradeneeded');
       dbRef.current = openRequest.result;
       
-
       if (!dbRef.current.objectStoreNames.contains('tasks')) {
         dbRef.current.createObjectStore('tasks', {keyPath: 'task', autoIncrement: true});
       }
     }
 
     openRequest.onerror = function() {
-      console.log('open db request - onerror');
+      alert('Не удалось получить доступ к IndexedDB');
     };
 
     openRequest.onsuccess = function(event: any) {
-      console.log('open db request - onsuccess');
-
       dbRef.current = event.target.result;
-      const transaction = event.target.result.transaction(['tasks']);
-
-      const tasks = transaction.objectStore("tasks");
-      // @ts-ignore
+      const transaction = event.target.result.transaction('tasks', 'readonly');
+      const tasks = transaction.objectStore("tasks").getAll();
       tasks.onsuccess = function(event: any) {
-        // console.log(tasks.getAll());
-        // setTodos(event.target.value);
-        const a = tasks.getAll();
-        console.log(a);
-        console.log(a.result);
-        setTodos(a.result);
+        setTodos(event.target.result);
       }
     }
   }, []);
@@ -67,18 +52,18 @@ const App: React.FC = () => {
 
     let transaction = dbRef.current?.transaction("tasks", "readwrite");
     let tasks = transaction?.objectStore("tasks");
-    tasks?.delete([id]);
+    tasks?.delete(id);
     console.log('delete');
   }
 
   const editItem = (newObject: Todo) => {
     const positionItemToChange = todos.findIndex((todo: Todo) => todo.id === newObject.id);
-    setTodos(todos.map((item1, index) => {
+    setTodos(todos.map((item, index) => {
       if (positionItemToChange === index) {
         return newObject;
       }
 
-      return item1;
+      return item;
     }));
 
     setCurrentItem(newObject);
@@ -91,50 +76,43 @@ const App: React.FC = () => {
   const handleOkAdd = () => {
     setIsAddVisible(false);
 
-    addTasks1();
+    addTasks();
   };
 
   const handleCancelAdd = () => {
     setIsAddVisible(false);
   };
 
-  const addTasks1 = () =>  {
-    const transaction: any = dbRef.current?.transaction('tasks', 'readwrite');
-    const tasks = transaction.objectStore('tasks');
-  
-    const task = {
-      userId: userId,
-        id: todos.length + 1,
-        title: title,
-        completed: false
-    };
-  
-    const request = tasks.add(task);
-    setTodos([
-      ...todos,
-      task,
-    ])
-  
-    request.onsuccess = function() {
-      console.log('Записано');
-    }
-  
-    request.onerror = function() {
-      console.log('Ошибка записи');
+  const addTasks = () =>  {
+    if (title !== '') {
+      const transaction: any = dbRef.current?.transaction('tasks', 'readwrite');
+      const tasks = transaction.objectStore('tasks');
+    
+      const task = {
+        userId: userId,
+          id: todos.length + 1,
+          title: title,
+          completed: false
+      };
+    
+      const request = tasks.add(task);
+      setTodos([
+        ...todos,
+        task,
+      ])
+    
+      request.onsuccess = function() {
+        setUserId(1);
+        setTitle('');
+      }
+    
+      request.onerror = function() {
+        alert('Не удалось добавить заметку');
+      }
+    } else {
+      showModal();
     }
   }
-
-  // const addTasks = () =>  {
-  //   setTodos([
-  //     ...todos,
-  //     {
-  //       userId: userId,
-  //       id: todos.length + 1,
-  //       title: title,
-  //       completed: false
-  //     }
-  //   ])
-  // }
 
   const handleChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -145,41 +123,43 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <Sidebar todos={todos} chooseItem={chooseItem} />
-      <div className="App__work">
-        <Modal title="Новая заметка" visible={isAddVisible} onOk={handleOkAdd} onCancel={handleCancelAdd}>
-          <form action="#" method="GET">
-            <input
-              type="number"
-              value={userId} placeholder="userId"
-              onChange={handleChangeUserId}
-              required={true}
+    <Context.Provider value={{
+      chooseItem, deleteItem, editItem,
+    }}>
+      <div className="App">
+        <Sidebar todos={todos} />
+        <div className="App__work">
+          <Modal title="Новая заметка" visible={isAddVisible} onOk={handleOkAdd} onCancel={handleCancelAdd}>
+            <form action="#" method="GET">
+              <input
+                type="number"
+                value={userId} placeholder="userId"
+                onChange={handleChangeUserId}
+                required={true}
+              />
+              <input
+                type="text"
+                value={title} placeholder="Заметка"
+                onChange={handleChangeTitle}
+                required={true}
+              />
+            </form>
+          </Modal>
+  
+          <Button
+            type="primary"
+            onClick={showModal}
+          >
+            Новая заметка
+          </Button>
+          {currentItem && showWorkspace && (
+            <Workspace
+              currentItem={currentItem}
             />
-            <input
-              type="text"
-              value={title} placeholder="Заметка"
-              onChange={handleChangeTitle}
-              required={true}
-            />
-          </form>
-        </Modal>
-
-        <Button
-          type="primary"
-          onClick={showModal}
-        >
-          Новая заметка
-        </Button>
-        {currentItem && showWorkspace && (
-          <Workspace
-            currentItem={currentItem}
-            deleteItem={deleteItem}
-            editItem={editItem}
-          />
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </Context.Provider>
   );
 } 
 

@@ -1,21 +1,21 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useContext, useState } from 'react';
 import { Todo } from '../../types';
 import { Modal, Button } from 'antd';
-
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Context } from '../../context';
 
 const { confirm } = Modal;
 
 type Props = {
   currentItem: Todo,
-  deleteItem: (id: number) => void;
-  editItem: (item: Todo) => void;
 };
 
-export const Workspace: React.FC<Props> = ({ currentItem, deleteItem, editItem }) => {
+export const Workspace: React.FC<Props> = ({ currentItem }) => {
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [userId, setId] = useState(currentItem.userId);
   const [title, setTitle] = useState(currentItem.title);
+
+  const { deleteItem, editItem } = useContext<any>(Context)
 
   const showEdit = () => {
     setIsEditVisible(true);

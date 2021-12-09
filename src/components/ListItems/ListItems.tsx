@@ -1,12 +1,15 @@
+import { useContext } from 'react';
 import { Todo } from '../../types';
 import './ListItems.scss';
+import { Context } from '../../context';
 
 type Props = {
   todos: Todo[],
-  chooseItem: (item: Todo) => void,
 };
 
-export const ListItems: React.FC<Props> = ({ todos, chooseItem }) => {
+export const ListItems: React.FC<Props> = ({ todos }) => {
+  const { chooseItem } = useContext<any>(Context)
+  
   return (
     <ul className="list">
     {todos.map((todo: Todo) => {
