@@ -45,9 +45,13 @@ const App: React.FC = () => {
 
       const tasks = transaction.objectStore("tasks");
       // @ts-ignore
-      tasks.getAll.onsuccess = function(event: any) {
-        console.log(tasks.getAll());
-        setTodos(event.target.value);
+      tasks.onsuccess = function(event: any) {
+        // console.log(tasks.getAll());
+        // setTodos(event.target.value);
+        const a = tasks.getAll();
+        console.log(a);
+        console.log(a.result);
+        setTodos(a.result);
       }
     }
   }, []);
@@ -60,6 +64,11 @@ const App: React.FC = () => {
   const deleteItem = (id: number = 0) => {
     setTodos(todos.filter((item: Todo) => item.id !== id));
     setShowWorkspace(false);
+
+    let transaction = dbRef.current?.transaction("tasks", "readwrite");
+    let tasks = transaction?.objectStore("tasks");
+    tasks?.delete([id]);
+    console.log('delete');
   }
 
   const editItem = (newObject: Todo) => {
