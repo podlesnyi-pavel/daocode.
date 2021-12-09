@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/daocodee/static/css/main.afa1227a.chunk.css",
-    "main.js": "/daocodee/static/js/main.05bf5a3b.chunk.js",
-    "main.js.map": "/daocodee/static/js/main.05bf5a3b.chunk.js.map",
+    "main.css": "/daocodee/static/css/main.7fee9beb.chunk.css",
+    "main.js": "/daocodee/static/js/main.85025ccd.chunk.js",
+    "main.js.map": "/daocodee/static/js/main.85025ccd.chunk.js.map",
     "runtime-main.js": "/daocodee/static/js/runtime-main.6ef97f5b.js",
     "runtime-main.js.map": "/daocodee/static/js/runtime-main.6ef97f5b.js.map",
     "static/css/2.2b8316e7.chunk.css": "/daocodee/static/css/2.2b8316e7.chunk.css",
@@ -10,14 +10,14 @@
     "static/js/2.83e36051.chunk.js.map": "/daocodee/static/js/2.83e36051.chunk.js.map",
     "index.html": "/daocodee/index.html",
     "static/css/2.2b8316e7.chunk.css.map": "/daocodee/static/css/2.2b8316e7.chunk.css.map",
-    "static/css/main.afa1227a.chunk.css.map": "/daocodee/static/css/main.afa1227a.chunk.css.map",
+    "static/css/main.7fee9beb.chunk.css.map": "/daocodee/static/css/main.7fee9beb.chunk.css.map",
     "static/js/2.83e36051.chunk.js.LICENSE.txt": "/daocodee/static/js/2.83e36051.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.6ef97f5b.js",
     "static/css/2.2b8316e7.chunk.css",
     "static/js/2.83e36051.chunk.js",
-    "static/css/main.afa1227a.chunk.css",
-    "static/js/main.05bf5a3b.chunk.js"
+    "static/css/main.7fee9beb.chunk.css",
+    "static/js/main.85025ccd.chunk.js"
   ]
 }
