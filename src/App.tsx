@@ -67,6 +67,56 @@ const App: React.FC = () => {
     }));
 
     setCurrentItem(newObject);
+
+    let openRequest = indexedDB.open('tasks', 1);
+
+    openRequest.onupgradeneeded = function() {
+      dbRef.current = openRequest.result;
+      
+      if (!dbRef.current.objectStoreNames.contains('tasks')) {
+        dbRef.current.createObjectStore('tasks', {keyPath: 'task', autoIncrement: true});
+      }
+    }
+
+    openRequest.onerror = function() {
+      alert('Не удалось получить доступ к IndexedDB');
+    };
+
+    openRequest.onsuccess = function(event: any) {
+      dbRef.current = event.target.result;
+      const transaction = event.target.result.transaction('tasks', 'readwrite');
+      const tasks = transaction.objectStore("tasks");
+      tasks.clear();
+      console.log('удаленно');
+      const positionToChange = todos.findIndex(item => item.id === newObject.id);
+
+      const newTodos = todos.map((todo, index) => {
+        if (index === positionToChange) {
+          return newObject;
+        }
+        return todo;
+      }); 
+      console.log(newTodos);
+
+      newTodos.forEach(item => tasks.add(item));
+      setTodos(newTodos);
+    }
+
+    // const objTrans = dbRef.current?.transaction("tasks", "readwrite");
+    // const objStore = objTrans?.objectStore('tasks');
+    // const objKeyRange = IDBKeyRange.only(newObject.id);
+    // const objCursor = objStore?.openCursor(objKeyRange);
+
+    // if (objCursor) {
+    //   objCursor.onsuccess = function(event: any) {
+    //     const cursor = event.target.result;
+    //     const objRequest = cursor.update({
+    //       ...newObject,
+    //       userId,
+    //       title,
+    //     });
+    //   }
+    // }
   };
 
   const showModal = () => {
